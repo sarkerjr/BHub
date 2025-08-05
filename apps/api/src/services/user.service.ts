@@ -10,11 +10,11 @@ export class UserService implements IUserService {
     @inject(TYPES.IUserRepository) private userRepository: IUserRepository
   ) {}
 
-  getUsers(): User[] {
-    return this.userRepository.getAll();
+  async getUsers(): Promise<User[]> {
+    return await this.userRepository.getAll();
   }
 
-  getUser(id: number): User | undefined {
-    return this.userRepository.getById(id);
+  async getUser(id: number): Promise<User | undefined> {
+    return await this.userRepository.getById(id);
   }
 }

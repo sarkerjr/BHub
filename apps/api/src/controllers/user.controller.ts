@@ -8,13 +8,13 @@ import { IUserService } from '../services/user.service.interface';
 export class UserController implements IUserController {
   constructor(@inject(TYPES.IUserService) private userService: IUserService) {}
 
-  getAllUsers(req: Request, res: Response): void {
-    const users = this.userService.getUsers();
+  async getAllUsers(req: Request, res: Response): Promise<void> {
+    const users = await this.userService.getUsers();
     res.json(users);
   }
 
-  getUserById(req: Request, res: Response): void {
-    const user = this.userService.getUser(Number(req.params.id));
+  async getUserById(req: Request, res: Response): Promise<void> {
+    const user = await this.userService.getUser(Number(req.params.id));
     if (user) {
       res.json(user);
     } else {

@@ -1,23 +1,24 @@
+import { injectable, inject } from 'inversify';
+import type { InferInsertModel, InferSelectModel } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import { IUserRepository } from './user.repository.interface';
-import { injectable } from 'inversify';
+import type { DatabaseInstance } from '../database/index';
+import { user } from '../database/schema';
+import { TYPES } from '../inversify/types';
 
-export type User = {
-  id: number;
-  name: string;
-};
+export type User = InferSelectModel<typeof user>;
+export type NewUser = InferInsertModel<typeof user>;
 
 @injectable()
 export class UserRepository implements IUserRepository {
-  private users: User[] = [
-    { id: 1, name: 'Alice' },
-    { id: 2, name: 'Bob' },
-  ];
+  constructor(@inject(TYPES.DB) private db: DatabaseInstance) {}
 
-  getAll(): User[] {
-    return this.users;
+  async getAll(): Promise<User[]> {
+    return await this.db.select().from(user);
   }
 
-  getById(id: number): User | undefined {
-    return this.users.find((user) => user.id === id);
+  async getById(id: number): Promise<User | undefined> {
+    const result = await this.db.select().from(user).where(eq(user.id, id));
+    return result[0];
   }
 }

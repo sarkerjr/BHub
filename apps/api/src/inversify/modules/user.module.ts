@@ -6,8 +6,10 @@ import { IUserController } from '../../controllers/user.controller.interface';
 import { UserRepository } from '../../repositories/user.repository';
 import { UserService } from '../../services/user.service';
 import { UserController } from '../../controllers/user.controller';
+import { db } from '../../database';
 
 export function registerUserModule(container: Container) {
+  container.bind<typeof db>(TYPES.DB).toConstantValue(db);
   container
     .bind<IUserRepository>(TYPES.IUserRepository)
     .to(UserRepository)

@@ -1,6 +1,6 @@
 import { User } from './user.repository';
 
 export interface IUserRepository {
-  getAll(): User[];
-  getById(id: number): User | undefined;
+  getAll(): Promise<User[]>;
+  getById(id: number): Promise<User | undefined>;
 }
