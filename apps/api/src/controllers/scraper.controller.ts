@@ -2,9 +2,10 @@ import { injectable, inject } from 'inversify';
 import { Request, Response, NextFunction } from 'express';
 import { IScraperService } from '../services/scraper.service.interface';
 import { TYPES } from '../inversify/types';
+import { IScraperController } from './scraper.controller.interface';
 
 @injectable()
-export class ScraperController {
+export class ScraperController implements IScraperController {
   constructor(
     @inject(TYPES.IScraperService) private scraperService: IScraperService
   ) {}

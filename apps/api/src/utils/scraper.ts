@@ -1,14 +1,5 @@
 import { chromium, Browser, BrowserContext } from 'playwright';
-
-export interface ScrapedData {
-  providerName?: string;
-  address?: string;
-  city?: string;
-  registeredCounty?: string;
-  zipCode?: string;
-  bedCount?: number | null;
-  [key: string]: string | number | null | undefined;
-}
+import type { ScrapedData } from '../lib/types';
 
 export async function scrapeProviderData(): Promise<ScrapedData[]> {
   let browser: Browser | undefined;

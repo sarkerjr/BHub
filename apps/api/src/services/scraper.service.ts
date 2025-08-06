@@ -1,6 +1,7 @@
 import { injectable } from 'inversify';
-import { scrapeProviderData, ScrapedData } from '../utils/scraper';
+import { scrapeProviderData } from '../utils/scraper';
 import { IScraperService } from './scraper.service.interface';
+import type { ScrapedData } from '../lib/types';
 
 @injectable()
 export class ScraperService implements IScraperService {

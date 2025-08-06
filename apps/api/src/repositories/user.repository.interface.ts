@@ -1,4 +1,4 @@
-import { User } from './user.repository';
+import type { User, NewUser } from './user.repository';
 
 export interface IUserRepository {
   getAll(): Promise<User[]>;

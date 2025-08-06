@@ -2,18 +2,23 @@ import { Router } from 'express';
 import { errorHandler } from '../middleware/errorHandler';
 import userRoutes from './user.routes';
 import scraperRoutes from './scraper.routes';
+import providerRoutes from './provider.routes';
 
 const router = Router();
 
 // Middleware
 router.use(errorHandler);
 
-router.get('/health', (_, res) => {
+const apiRouter = Router();
+
+apiRouter.get('/health', (_, res) => {
   res.send('OK');
 });
 
-router.use('/user', userRoutes);
+apiRouter.use('/user', userRoutes);
+apiRouter.use('/providers', providerRoutes);
+apiRouter.use(scraperRoutes);
 
-router.use(scraperRoutes);
+router.use('/api', apiRouter);
 
 export default router;
