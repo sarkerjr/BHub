@@ -1,6 +1,7 @@
 import { Router } from 'express';
-import userRoutes from './user.routes';
 import { errorHandler } from '../middleware/errorHandler';
+import userRoutes from './user.routes';
+import scraperRoutes from './scraper.routes';
 
 const router = Router();
 
@@ -12,5 +13,7 @@ router.get('/health', (_, res) => {
 });
 
 router.use('/user', userRoutes);
+
+router.use(scraperRoutes);
 
 export default router;
