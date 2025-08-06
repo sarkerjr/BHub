@@ -4,6 +4,7 @@ import { TYPES } from './types';
 import { registerUserModule } from './modules/user.module';
 import { registerScraperModule } from './modules/scraper.module';
 import { registerProviderModule } from './modules/provider.module';
+import { registerMediaModule } from './modules/media.module';
 import { db } from '../database';
 
 const container = new Container();
@@ -15,5 +16,6 @@ container.bind<typeof db>(TYPES.DB).toConstantValue(db);
 registerUserModule(container);
 registerScraperModule(container);
 registerProviderModule(container);
+registerMediaModule(container);
 
 export { container };
