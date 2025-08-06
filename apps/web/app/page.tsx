@@ -1,102 +1,125 @@
-import Image, { type ImageProps } from "next/image";
-import { Button } from "@repo/ui/button";
-import styles from "./page.module.css";
+'use client';
 
-type Props = Omit<ImageProps, "src"> & {
-  srcLight: string;
-  srcDark: string;
-};
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { Search } from 'lucide-react';
+import { ProviderService } from '../src/services/provider.service';
+import type { Provider } from '@/lib/types';
 
-const ThemeImage = (props: Props) => {
-  const { srcLight, srcDark, ...rest } = props;
+export default function Page() {
+  const router = useRouter();
+  const [providers, setProviders] = useState<Provider[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const handleSearch = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!searchTerm.trim()) return;
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const result = await ProviderService.searchProviders(searchTerm);
+      setProviders(result);
+    } catch (err) {
+      console.error('Failed to fetch providers:', err);
+      setError('Failed to fetch providers. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <>
-      <Image {...rest} src={srcLight} className="imgLight" />
-      <Image {...rest} src={srcDark} className="imgDark" />
-    </>
-  );
-};
+    <div className="container mx-auto p-6 max-w-4xl">
+      <h1 className="text-3xl font-bold mb-6">Provider Search</h1>
 
-export default function Home() {
-  return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <ThemeImage
-          className={styles.logo}
-          srcLight="turborepo-dark.svg"
-          srcDark="turborepo-light.svg"
-          alt="Turborepo logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol>
-          <li>
-            Get started by editing <code>apps/web/app/page.tsx</code>
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new/clone?demo-description=Learn+to+implement+a+monorepo+with+a+two+Next.js+sites+that+has+installed+three+local+packages.&demo-image=%2F%2Fimages.ctfassets.net%2Fe5382hct74si%2F4K8ZISWAzJ8X1504ca0zmC%2F0b21a1c6246add355e55816278ef54bc%2FBasic.png&demo-title=Monorepo+with+Turborepo&demo-url=https%3A%2F%2Fexamples-basic-web.vercel.sh%2F&from=templates&project-name=Monorepo+with+Turborepo&repository-name=monorepo-turborepo&repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fturborepo%2Ftree%2Fmain%2Fexamples%2Fbasic&root-directory=apps%2Fdocs&skippable-integrations=1&teamSlug=vercel&utm_source=create-turbo"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+      <form onSubmit={handleSearch} className="mb-6">
+        <div className="flex gap-2">
+          <div className="relative flex-1">
+            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              type="search"
+              placeholder="Search providers..."
+              className="pl-8 w-full"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              disabled={loading}
             />
-            Deploy now
-          </a>
-          <a
-            href="https://turborepo.com/docs?utm_source"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
+          </div>
+          <Button type="submit" disabled={loading || !searchTerm.trim()}>
+            {loading ? 'Searching...' : 'Search'}
+          </Button>
         </div>
-        <Button appName="web" className={styles.secondary}>
-          Open alert
-        </Button>
-      </main>
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com/templates?search=turborepo&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          href="https://turborepo.com?utm_source=create-turbo"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to turborepo.com →
-        </a>
-      </footer>
+      </form>
+
+      {error && (
+        <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-lg mb-6">
+          {error}
+        </div>
+      )}
+
+      <div className="rounded-md border">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Provider Name</TableHead>
+              <TableHead>City</TableHead>
+              <TableHead>County</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {loading ? (
+              <TableRow>
+                <TableCell colSpan={3} className="text-center py-8">
+                  <div className="flex flex-col items-center justify-center space-y-2">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+                    <p className="text-sm text-gray-500">
+                      Searching providers...
+                    </p>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ) : providers?.length === 0 ? (
+              <TableRow>
+                <TableCell
+                  colSpan={3}
+                  className="text-center py-8 text-muted-foreground"
+                >
+                  {searchTerm
+                    ? 'No providers found. Try a different search term.'
+                    : 'Enter a search term to find providers.'}
+                </TableCell>
+              </TableRow>
+            ) : (
+              providers?.map((provider, index) => (
+                <TableRow 
+                  key={index}
+                  className="cursor-pointer hover:bg-gray-50 transition-colors"
+                  onClick={() => router.push(`/providers/${provider.id || index}`)}
+                >
+                  <TableCell className="font-medium">
+                    {provider.providerName || '-'}
+                  </TableCell>
+                  <TableCell>{provider.city || '-'}</TableCell>
+                  <TableCell>{provider.registeredCounty || '-'}</TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </div>
     </div>
   );
 }

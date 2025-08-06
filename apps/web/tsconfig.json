@@ -1,6 +1,24 @@
 {
   "extends": "@repo/typescript-config/nextjs.json",
   "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ],
+      "@/components/*": [
+        "./components/*"
+      ],
+      "@/lib/*": [
+        "./src/lib/*"
+      ],
+      "@/styles/*": [
+        "./src/styles/*"
+      ],
+      "shadcn/ui/*": [
+        "./node_modules/shadcn/ui/*"
+      ]
+    },
     "plugins": [
       {
         "name": "next"
