@@ -7,6 +7,7 @@ function getEnv(key: string): string {
 }
 
 export const env = {
+  NODE_ENV: getEnv('NODE_ENV'),
   PORT: getEnv('PORT'),
   DATABASE_URL: getEnv('DATABASE_URL'),
   AWS_ENDPOINT: getEnv('AWS_ENDPOINT'),
