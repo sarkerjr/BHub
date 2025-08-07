@@ -48,6 +48,10 @@ const useAuthStore = create<AuthStoreState>((set, get) => ({
       const response = await AuthService.login({ email, password });
       const { user, token } = response.data;
 
+      if (!user || !token) {
+        throw new Error('Invalid response from server');
+      }
+
       if (typeof window !== 'undefined') {
         localStorage.setItem('token', token);
         localStorage.setItem('user', JSON.stringify(user));
