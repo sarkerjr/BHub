@@ -1,14 +1,14 @@
 import {
-  mysqlTable,
+  bigserial,
+  pgTable,
+  integer,
   timestamp,
-  serial,
   varchar,
-  int,
-} from 'drizzle-orm/mysql-core';
+} from 'drizzle-orm/pg-core';
 
-export const media = mysqlTable('media', {
-  id: serial('id').primaryKey(),
-  providerId: int('provider_id').notNull(),
+export const media = pgTable('media', {
+  id: bigserial('id', { mode: 'number' }).primaryKey(),
+  providerId: integer('provider_id').notNull(),
   fileName: varchar('file_name', { length: 255 }).notNull(),
   fileUrl: varchar('file_url', { length: 255 }).notNull(),
   createdAt: timestamp('created_at', { mode: 'date' }).notNull().defaultNow(),

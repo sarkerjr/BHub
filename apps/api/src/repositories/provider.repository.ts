@@ -23,7 +23,7 @@ export class ProviderRepository implements IProviderRepository {
 
   async getAll(search?: string): Promise<Provider[]> {
     const query = this.db.select().from(provider);
-    
+
     if (search) {
       const searchTerm = `%${search}%`.toLowerCase();
       return await query.where(
@@ -37,7 +37,7 @@ export class ProviderRepository implements IProviderRepository {
         )
       );
     }
-    
+
     return await query;
   }
 
@@ -54,12 +54,8 @@ export class ProviderRepository implements IProviderRepository {
   ): Promise<{ insertedCount: number }> {
     if (providers.length === 0) return { insertedCount: 0 };
 
-    const result = await this.db
-      .insert(provider)
-      .values(providers)
-      .then((result) => result[0].affectedRows || 0);
-
-    return { insertedCount: result };
+    const result = await this.db.insert(provider).values(providers).returning();
+    return { insertedCount: result.length };
   }
 
   async updateMany(
@@ -76,12 +72,12 @@ export class ProviderRepository implements IProviderRepository {
             updatedAt: new Date(),
           })
           .where(eq(provider.id, id))
-          .then((result) => result[0].affectedRows)
+          .then((result) => result.rowCount || 0)
       )
     );
 
-    const updatedCount = results.reduce(
-      (sum, affectedRows) => sum + (affectedRows || 0),
+    const updatedCount = results.reduce<number>(
+      (sum: number, rowCount: number) => sum + rowCount,
       0
     );
     return { updatedCount };

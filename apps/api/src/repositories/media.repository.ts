@@ -13,19 +13,15 @@ export class MediaRepository implements IMediaRepository {
   constructor(@inject(TYPES.DB) private db: DatabaseInstance) {}
 
   async create(newMedia: NewMedia): Promise<Media> {
-    const insertResult = await this.db.insert(media).values({
-      ...newMedia,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    });
-
-    const [createdMedia] = await this.db
-      .select()
-      .from(media)
-      .where(eq(media.id, insertResult[0].insertId))
-      .limit(1);
-
-    return createdMedia;
+    const result = await this.db
+      .insert(media)
+      .values({
+        ...newMedia,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      })
+      .returning();
+    return result[0];
   }
 
   async getByProviderId(providerId: number): Promise<Media[]> {
