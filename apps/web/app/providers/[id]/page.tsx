@@ -3,57 +3,76 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
+import { ImageSlider } from '@/components/ui/image-slider';
 import { ProviderService } from '@/services/provider.service';
+import { MediaService } from '@/services/media.service';
+import type { Media } from '@/lib/types';
 import type { Provider } from '@/lib/types';
 
 export default function ProviderDetailsPage() {
   const params = useParams();
-  const id = params?.id?.toString();
   const router = useRouter();
   const [provider, setProvider] = useState<Provider | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [media, setMedia] = useState<Media[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isMediaLoading, setIsMediaLoading] = useState(true);
+  const [mediaError, setMediaError] = useState<string | null>(null);
 
+  const providerId = params?.id?.toString();
+
+  // Fetch provider data
   useEffect(() => {
-    const fetchProvider = async () => {
-      if (!id) return;
+    if (!providerId) return;
 
+    const fetchData = async () => {
       try {
-        setLoading(true);
-        const data = await ProviderService.getProviderById(id as string);
-        setProvider(data);
+        setIsLoading(true);
+        const [providerData, mediaData] = await Promise.all([
+          ProviderService.getProviderById(providerId),
+          MediaService.getMediaByProviderId(providerId).catch((err) => {
+            console.error('Error fetching media:', err);
+            setMediaError('Failed to load media');
+            return [];
+          }),
+        ]);
+
+        setProvider(providerData);
+        setMedia(mediaData || []);
+        setError(null);
       } catch (err) {
-        console.error('Failed to fetch provider:', err);
-        setError('Failed to load provider details. Please try again.');
+        console.error('Error fetching data:', err);
+        setError('Failed to load provider details');
       } finally {
-        setLoading(false);
+        setIsLoading(false);
+        setIsMediaLoading(false);
       }
     };
 
-    fetchProvider();
-  }, [id]);
+    fetchData();
+  }, [providerId]);
 
-  if (loading) {
+  const handleBack = () => {
+    router.push('/providers');
+  };
+
+  if (isLoading) {
     return (
-      <div className="container mx-auto p-6 max-w-4xl">
-        <Button
-          variant="outline"
-          onClick={() => router.back()}
-          className="mb-6"
-        >
-          ← Back to Search
-        </Button>
-        <div className="space-y-4">
-          <Skeleton className="h-12 w-64" />
-          <Skeleton className="h-96 w-full" />
+      <div className="container mx-auto px-4 py-8">
+        <Skeleton className="h-10 w-32 mb-6" />
+        <div className="grid gap-8 md:grid-cols-2">
+          <div className="space-y-4">
+            <Skeleton className="h-64 w-full rounded-lg" />
+          </div>
+          <div className="space-y-4">
+            <Skeleton className="h-8 w-3/4" />
+            <Skeleton className="h-6 w-1/2" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-5/6" />
+            <Skeleton className="h-4 w-4/5" />
+          </div>
         </div>
       </div>
     );
@@ -61,17 +80,12 @@ export default function ProviderDetailsPage() {
 
   if (error || !provider) {
     return (
-      <div className="container mx-auto p-6 max-w-4xl">
-        <Button
-          variant="outline"
-          onClick={() => router.back()}
-          className="mb-6"
-        >
-          ← Back to Search
-        </Button>
-        <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-red-700">
-          <h2 className="text-xl font-semibold mb-2">Error</h2>
+      <div className="container mx-auto px-4 py-8">
+        <div className="rounded-md bg-destructive/10 p-4 text-destructive">
           <p>{error || 'Provider not found'}</p>
+          <Button variant="ghost" className="mt-4" onClick={handleBack}>
+            Back to Providers
+          </Button>
         </div>
       </div>
     );
@@ -79,65 +93,64 @@ export default function ProviderDetailsPage() {
 
   return (
     <div className="container mx-auto p-6 max-w-4xl">
-      <Button variant="outline" onClick={() => router.back()} className="mb-6">
-        ← Back to Search
+      <Button variant="outline" size="sm" onClick={handleBack} className="mb-6">
+        ← Back to Providers
       </Button>
 
-      <Card className="overflow-hidden py-0">
-        <CardHeader className="bg-gray-50 border-b py-3">
-          <div className="flex justify-between items-start">
-            <div>
-              <CardTitle className="text-2xl">
-                {provider.providerName || 'Provider Details'}
-              </CardTitle>
-              <CardDescription className="mt-2">
-                {provider.registeredCounty && `${provider.registeredCounty} • `}
-                {provider.city && `${provider.city}`}
-              </CardDescription>
-            </div>
-          </div>
-        </CardHeader>
+      <div className="bg-white rounded-lg shadow-sm border p-6 space-y-8">
+        <div>
+          <h1 className="text-2xl font-bold mb-2">{provider.providerName}</h1>
+          <p className="text-muted-foreground">ID: {provider.id}</p>
+        </div>
 
-        <CardContent className="p-6">
-          <div className="grid gap-6 sm:grid-cols-2">
-            <div className="space-y-4">
+        <div className="space-y-6">
+          <div className="grid gap-6 md:grid-cols-2">
+            <div>
+              <h3 className="text-sm font-medium text-muted-foreground">
+                Address
+              </h3>
+              <p className="mt-1">
+                {provider.address}
+                <br />
+                {provider.city}, {provider.registeredCounty} {provider.zipCode}
+              </p>
+            </div>
+
+            {provider.bedCount && (
               <div>
                 <h3 className="text-sm font-medium text-muted-foreground">
-                  Address
+                  Bed Count
                 </h3>
-                <p className="mt-1">
-                  {provider.address || 'N/A'}
-                  {provider.city && `, ${provider.city}`}
-                  {provider.registeredCounty &&
-                    `, ${provider.registeredCounty}`}
-                  {provider.zipCode && `, ${provider.zipCode}`}
-                </p>
+                <p className="mt-1">{provider.bedCount}</p>
               </div>
+            )}
+          </div>
 
-              {provider.bedCount !== undefined &&
-                provider.bedCount !== null && (
-                  <div>
-                    <h3 className="text-sm font-medium text-muted-foreground">
-                      Bed Count
-                    </h3>
-                    <p className="mt-1">{provider.bedCount}</p>
-                  </div>
-                )}
-            </div>
-
-            <div className="space-y-4">
-              {provider.phone && (
-                <div>
-                  <h3 className="text-sm font-medium text-muted-foreground">
-                    Phone
-                  </h3>
-                  <p className="mt-1">{provider.phone}</p>
+          <div className="mt-8">
+            <h2 className="text-lg font-semibold mb-4">Facility Images</h2>
+            <div className="relative w-full bg-gray-50 rounded-lg overflow-hidden">
+              {isMediaLoading ? (
+                <div className="aspect-video flex items-center justify-center">
+                  <p>Loading images...</p>
                 </div>
+              ) : mediaError ? (
+                <div className="aspect-video flex items-center justify-center p-4 text-center">
+                  <p className="text-destructive">{mediaError}</p>
+                </div>
+              ) : (
+                <ImageSlider
+                  images={media.map((m) => ({
+                    id: m.id,
+                    url: m.fileUrl,
+                    alt: `Image of ${provider.providerName}`,
+                  }))}
+                  className="w-full"
+                />
               )}
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }

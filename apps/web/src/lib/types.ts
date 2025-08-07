@@ -1,9 +1,18 @@
 export interface Provider {
-  providerName?: string;
-  address?: string;
-  city?: string;
-  registeredCounty?: string;
-  zipCode?: string;
-  bedCount?: number | null;
-  [key: string]: string | number | null | undefined;
+  id: number;
+  providerName: string;
+  address: string;
+  city: string;
+  registeredCounty: string;
+  zipCode: string;
+  bedCount: number | null;
+}
+
+export interface Media {
+  id: number;
+  providerId: number;
+  fileName: string;
+  fileUrl: string;
+  createdAt: string;
+  updatedAt: string;
 }
