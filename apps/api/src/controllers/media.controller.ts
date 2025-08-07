@@ -26,20 +26,27 @@ export class MediaController implements IMediaController {
     next: NextFunction
   ): Promise<void> => {
     try {
-      if (!req.file) {
-        throw new BadRequestError('No file uploaded');
+      const files = req.files as Express.Multer.File[];
+
+      if (!files || files.length === 0) {
+        throw new BadRequestError('No files uploaded');
       }
 
       const providerId = parseInt(req.params.providerId, 10);
-      if (isNaN(providerId)) {
-        throw new BadRequestError('Invalid provider ID');
+      if (isNaN(providerId) || providerId <= 0) {
+        throw new BadRequestError(
+          'Invalid provider ID. Must be a positive number.'
+        );
       }
 
-      const media = await this.mediaService.uploadMedia(req.file, providerId);
+      const uploadPromises = files.map((file) =>
+        this.mediaService.uploadMedia(file, providerId)
+      );
+      const result = await Promise.all(uploadPromises);
 
       res.status(201).json({
         success: true,
-        data: media,
+        data: result,
       });
     } catch (error) {
       next(error);

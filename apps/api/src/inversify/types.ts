@@ -19,7 +19,7 @@ export const TYPES = {
   IMediaController: Symbol.for('IMediaController'),
 
   // AWS
-  S3Service: Symbol.for('S3Service'),
+  IS3Service: Symbol.for('IS3Service'),
 
   // Database
   DB: Symbol.for('DB'),

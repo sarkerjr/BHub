@@ -1,0 +1,1 @@
+ALTER TABLE `media` ADD `file_url` varchar(255) NOT NULL;

@@ -11,7 +11,7 @@ export const registerMediaModule = (container: Container) => {
     .to(MediaRepository)
     .inSingletonScope();
 
-  container.bind<S3Service>(TYPES.S3Service).to(S3Service).inSingletonScope();
+  container.bind<S3Service>(TYPES.IS3Service).to(S3Service).inSingletonScope();
   container
     .bind<MediaService>(TYPES.IMediaService)
     .to(MediaService)

@@ -1,15 +1,13 @@
 import {
   S3Client,
   PutObjectCommand,
-  GetObjectCommand,
   type PutObjectCommandInput,
 } from '@aws-sdk/client-s3';
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { v4 as uuidv4 } from 'uuid';
 import { env } from '../../lib/env';
-import type { Readable } from 'stream';
+import { IS3Service } from './s3.service.interface';
 
-export class S3Service {
+export class S3Service implements IS3Service {
   private s3: S3Client;
   private bucketName: string;
 
@@ -17,11 +15,13 @@ export class S3Service {
     this.s3 = new S3Client({
       region: env.AWS_REGION,
       endpoint: env.AWS_ENDPOINT,
+      forcePathStyle: true, // Required for MinIO
       credentials: {
         accessKeyId: env.AWS_ACCESS_KEY_ID,
         secretAccessKey: env.AWS_SECRET_ACCESS_KEY,
       },
     });
+
     this.bucketName = env.AWS_S3_BUCKET_NAME;
   }
 
@@ -30,7 +30,7 @@ export class S3Service {
     providerId: number
   ): Promise<string> {
     const fileExtension = file.originalname.split('.').pop();
-    const key = `providers/${providerId}/${uuidv4()}.${fileExtension}`;
+    const key = `${uuidv4()}.${fileExtension}`;
 
     const params: PutObjectCommandInput = {
       Bucket: this.bucketName,
@@ -45,20 +45,6 @@ export class S3Service {
     } catch (error) {
       console.error('Error uploading file to S3:', error);
       throw new Error('Failed to upload file to S3');
-    }
-  }
-
-  async getSignedUrl(key: string, expiresIn = 3600): Promise<string> {
-    try {
-      const command = new GetObjectCommand({
-        Bucket: this.bucketName,
-        Key: key,
-      });
-
-      return await getSignedUrl(this.s3, command, { expiresIn });
-    } catch (error) {
-      console.error('Error generating signed URL:', error);
-      throw new Error('Failed to generate signed URL');
     }
   }
 }
