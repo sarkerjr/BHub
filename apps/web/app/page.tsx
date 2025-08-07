@@ -15,17 +15,18 @@ import {
 import { Search } from 'lucide-react';
 import { ProviderService } from '../src/services/provider.service';
 import type { Provider } from '@/lib/types';
+import { useProviderStore } from 'store/provider.store';
 
 export default function Page() {
   const router = useRouter();
-  const [providers, setProviders] = useState<Provider[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
 
+  const { providers, setProviders } = useProviderStore();
+
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!searchTerm.trim()) return;
 
     setLoading(true);
     setError(null);
@@ -58,7 +59,7 @@ export default function Page() {
               disabled={loading}
             />
           </div>
-          <Button type="submit" disabled={loading || !searchTerm.trim()}>
+          <Button type="submit" disabled={loading}>
             {loading ? 'Searching...' : 'Search'}
           </Button>
         </div>
@@ -104,10 +105,12 @@ export default function Page() {
               </TableRow>
             ) : (
               providers?.map((provider, index) => (
-                <TableRow 
+                <TableRow
                   key={index}
                   className="cursor-pointer hover:bg-gray-50 transition-colors"
-                  onClick={() => router.push(`/providers/${provider.id || index}`)}
+                  onClick={() =>
+                    router.push(`/providers/${provider.id || index}`)
+                  }
                 >
                   <TableCell className="font-medium">
                     {provider.providerName || '-'}
