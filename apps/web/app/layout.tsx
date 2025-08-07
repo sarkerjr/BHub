@@ -29,9 +29,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} bg-gray-50`}
       >
-        <AuthGuard>
-          <AppLayout>{children}</AppLayout>
-        </AuthGuard>
+        <AuthGuard>{children}</AuthGuard>
       </body>
     </html>
   );

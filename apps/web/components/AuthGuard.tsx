@@ -4,7 +4,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import useAuthStore from '../store/auth.store';
 
-const publicPaths = ['/login', '/register', '/forgot-password'];
+const publicPaths = ['/login'];
 
 interface AuthGuardProps {
   children: React.ReactNode;
@@ -26,8 +26,8 @@ const AuthGuard = ({ children, redirectTo = '/login' }: AuthGuardProps) => {
 
     if (!isAuthenticated && !isPublicPath) {
       router.push(redirectTo);
-    } else if (isAuthenticated) {
-      router.push('/');
+    } else if (isAuthenticated && isPublicPath) {
+      router.push('/dashboard');
     }
   }, [isAuthenticated, isLoading, router, isPublicPath, pathname]);
 

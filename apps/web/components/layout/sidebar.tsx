@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import useAuthStore from 'store/auth.store';
 
 const navigation = [
-  { name: 'Dashboard', href: '/', icon: Home },
+  { name: 'Dashboard', href: '/dashboard', icon: Home },
   { name: 'Upload Media', href: '/upload', icon: Settings },
   { name: 'Scrape Data', href: '/scraper', icon: Settings },
 ];
