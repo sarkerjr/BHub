@@ -1,4 +1,5 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
+import useAuthStore from 'store/auth.store';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
@@ -19,6 +20,10 @@ class ApiClient {
 
     this.instance.interceptors.request.use(
       (config) => {
+        const token = useAuthStore.getState().getToken();
+        if (token) {
+          config.headers.Authorization = `Bearer ${token}`;
+        }
         return config;
       },
       (error) => {

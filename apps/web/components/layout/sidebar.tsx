@@ -1,6 +1,9 @@
+'use client';
+
 import Link from 'next/link';
 import { Home, Settings, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import useAuthStore from 'store/auth.store';
 
 const navigation = [
   { name: 'Dashboard', href: '/', icon: Home },
@@ -9,6 +12,8 @@ const navigation = [
 ];
 
 export function Sidebar() {
+  const { logout } = useAuthStore();
+
   return (
     <div className="hidden md:flex md:flex-shrink-0">
       <div className="flex flex-col w-64 border-r border-gray-200 bg-white">
@@ -34,7 +39,7 @@ export function Sidebar() {
             </nav>
           </div>
           <div className="flex items-center p-4 mt-auto">
-            <Button variant="outline">
+            <Button variant="outline" onClick={logout}>
               <LogOut className="w-5 h-5 mr-3 text-gray-400" />
               Sign out
             </Button>

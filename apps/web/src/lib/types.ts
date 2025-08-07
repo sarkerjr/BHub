@@ -16,3 +16,9 @@ export interface Media {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface User {
+  id: number;
+  name: string;
+  email: string;
+}
