@@ -1,0 +1,17 @@
+{
+  "version": "5",
+  "dialect": "mysql",
+  "id": "dc5933f7-812b-417e-862c-75a70442740f",
+  "prevId": "ee8568d6-bbdd-4c5b-bf6e-b8492ececd62",
+  "tables": {},
+  "views": {},
+  "_meta": {
+    "schemas": {},
+    "tables": {},
+    "columns": {}
+  },
+  "internal": {
+    "tables": {},
+    "indexes": {}
+  }
+}

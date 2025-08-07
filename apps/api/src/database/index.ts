@@ -1,10 +1,11 @@
-import { drizzle } from 'drizzle-orm/mysql2';
-import type { MySql2Database } from 'drizzle-orm/mysql2';
-import { env } from '../lib/env';
-import * as schema from './schema/index';
+import 'dotenv/config';
+import { drizzle } from 'drizzle-orm/node-postgres';
+import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 
-type DatabaseInstance = MySql2Database<typeof schema>;
+import * as schema from './schema';
 
-const db = drizzle(env.DATABASE_URL);
+type DatabaseInstance = NodePgDatabase<typeof schema>;
+
+const db: DatabaseInstance = drizzle(process.env.DATABASE_URL!, { schema });
 
 export { db, schema, type DatabaseInstance };
