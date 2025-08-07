@@ -4,6 +4,10 @@ export const TYPES = {
   IUserService: Symbol.for('IUserService'),
   IUserController: Symbol.for('IUserController'),
 
+  // Authentication
+  IAuthService: Symbol.for('IAuthService'),
+  IAuthController: Symbol.for('IAuthController'),
+
   // Scraper
   IScraperService: Symbol.for('IScraperService'),
   IScraperController: Symbol.for('IScraperController'),

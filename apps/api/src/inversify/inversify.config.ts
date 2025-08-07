@@ -5,6 +5,7 @@ import { registerUserModule } from './modules/user.module';
 import { registerScraperModule } from './modules/scraper.module';
 import { registerProviderModule } from './modules/provider.module';
 import { registerMediaModule } from './modules/media.module';
+import { registerAuthModule } from './modules/auth.module';
 import { db } from '../database';
 
 const container = new Container();
@@ -17,5 +18,6 @@ registerUserModule(container);
 registerScraperModule(container);
 registerProviderModule(container);
 registerMediaModule(container);
+registerAuthModule(container);
 
 export { container };

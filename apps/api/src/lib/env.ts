@@ -14,6 +14,7 @@ export const env = {
   AWS_ACCESS_KEY_ID: getEnv('AWS_ACCESS_KEY_ID'),
   AWS_SECRET_ACCESS_KEY: getEnv('AWS_SECRET_ACCESS_KEY'),
   AWS_S3_BUCKET_NAME: getEnv('AWS_S3_BUCKET_NAME'),
+  JWT_SECRET: getEnv('JWT_SECRET'),
 };
 
 export type Env = typeof env;

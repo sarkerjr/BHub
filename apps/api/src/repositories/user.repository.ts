@@ -21,4 +21,27 @@ export class UserRepository implements IUserRepository {
     const result = await this.db.select().from(user).where(eq(user.id, id));
     return result[0];
   }
+
+  async findByEmail(email: string): Promise<User | undefined> {
+    const result = await this.db
+      .select()
+      .from(user)
+      .where(eq(user.email, email));
+    return result[0];
+  }
+
+  async create(newUser: NewUser): Promise<User> {
+    const [insertedUser] = await this.db.insert(user).values({
+      name: newUser.name,
+      email: newUser.email,
+      password: newUser.password,
+    });
+
+    const [createdUser] = await this.db
+      .select()
+      .from(user)
+      .where(eq(user.id, insertedUser.insertId));
+
+    return createdUser;
+  }
 }
